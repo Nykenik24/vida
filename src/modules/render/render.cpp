@@ -6,11 +6,11 @@
 namespace Vida2D {
 namespace Render {
 bool Point(Vector2 pos) {
-  return SDL_RenderPoint(Context::GetInstance().GetRenderer(), pos.x, pos.y);
+  return SDL_RenderPoint(Context::GetInstance().renderer, pos.x, pos.y);
 }
 
 bool Line(Vector2 start, Vector2 end) {
-  return SDL_RenderLine(Context::GetInstance().GetRenderer(), start.x, start.y,
+  return SDL_RenderLine(Context::GetInstance().renderer, start.x, start.y,
                         end.x, end.y);
 }
 
@@ -23,7 +23,7 @@ bool Rect(Vector2 pos, Vector2 size) {
   rect.w = size.x;
   rect.h = size.y;
 
-  return SDL_RenderRect(ctx.GetRenderer(), &rect);
+  return SDL_RenderRect(ctx.renderer, &rect);
 }
 
 bool RectFill(Vector2 pos, Vector2 size) {
@@ -35,22 +35,22 @@ bool RectFill(Vector2 pos, Vector2 size) {
   rect.w = size.x;
   rect.h = size.y;
 
-  return SDL_RenderFillRect(ctx.GetRenderer(), &rect);
+  return SDL_RenderFillRect(ctx.renderer, &rect);
 }
 
 bool Triangle(Vector2 p1, Vector2 p2, Vector2 p3) {
   auto &ctx = Context::GetInstance();
 
-  V2D_CHECK(SDL_RenderLine(ctx.GetRenderer(), p1.x, p1.y, p2.x, p2.y));
-  V2D_CHECK(SDL_RenderLine(ctx.GetRenderer(), p2.x, p2.y, p3.x, p3.y));
-  V2D_CHECK(SDL_RenderLine(ctx.GetRenderer(), p3.x, p3.y, p1.x, p1.y));
+  V2D_CHECK(SDL_RenderLine(ctx.renderer, p1.x, p1.y, p2.x, p2.y));
+  V2D_CHECK(SDL_RenderLine(ctx.renderer, p2.x, p2.y, p3.x, p3.y));
+  V2D_CHECK(SDL_RenderLine(ctx.renderer, p3.x, p3.y, p1.x, p1.y));
   return true;
 }
 
 bool TriangleFill(Vector2 p1, Vector2 p2, Vector2 p3) {
   auto &ctx = Context::GetInstance();
   Color c;
-  SDL_GetRenderDrawColor(ctx.GetRenderer(), &c.r, &c.g, &c.b, &c.a);
+  SDL_GetRenderDrawColor(ctx.renderer, &c.r, &c.g, &c.b, &c.a);
 
   SDL_FColor fc = {
       c.r / 255.0f,
@@ -65,7 +65,7 @@ bool TriangleFill(Vector2 p1, Vector2 p2, Vector2 p3) {
       {{p3.x, p3.y}, fc, {0, 0}},
   };
 
-  return SDL_RenderGeometry(ctx.GetRenderer(), NULL, verts, 3, NULL, 0);
+  return SDL_RenderGeometry(ctx.renderer, NULL, verts, 3, NULL, 0);
 }
 
 bool Circle(Vector2 center, float radius) {
@@ -74,7 +74,7 @@ bool Circle(Vector2 center, float radius) {
   int x = radius, y = 0, err = 0;
   float cx = center.x;
   float cy = center.y;
-  SDL_Renderer *r = ctx.GetRenderer();
+  SDL_Renderer *r = ctx.renderer;
   while (x >= y) {
     V2D_CHECK(SDL_RenderPoint(r, cx + x, cy + y));
     V2D_CHECK(SDL_RenderPoint(r, cx + y, cy + x));
@@ -100,24 +100,24 @@ bool CircleFill(Vector2 center, float radius) {
   auto &ctx = Context::GetInstance();
   for (int dy = -radius; dy <= radius; dy++) {
     int dx = (int)SDL_sqrt(radius * radius - dy * dy);
-    V2D_CHECK(SDL_RenderLine(ctx.GetRenderer(), center.x - dx, center.y + dy,
+    V2D_CHECK(SDL_RenderLine(ctx.renderer, center.x - dx, center.y + dy,
                              center.x + dx, center.y + dy));
   }
   return true;
 }
 
 bool SetColor(Color color) {
-  return SDL_SetRenderDrawColor(Context::GetInstance().GetRenderer(), color.r,
+  return SDL_SetRenderDrawColor(Context::GetInstance().renderer, color.r,
                                 color.g, color.b, color.a);
 }
 
 void SetBackgroundColor(Color color) {
-  Context::GetInstance().SetClearColor(color);
+  Context::GetInstance().clear_color = color;
 }
 
 bool Update() {
   auto &ctx = Context::GetInstance();
-  return SDL_RenderPresent(ctx.GetRenderer());
+  return SDL_RenderPresent(ctx.renderer);
 }
 } // namespace Render
 } // namespace Vida2D

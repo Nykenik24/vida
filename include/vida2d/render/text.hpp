@@ -63,14 +63,14 @@ private:
 inline Text::Text(Font &font, std::string str) {
   if (!font.Valid())
     return;
-  text_obj = TTF_CreateText(Context::GetInstance().GetTextEngine(), font.Raw(),
+  text_obj = TTF_CreateText(Context::GetInstance().text_engine, font.Raw(),
                             str.c_str(), str.length());
 }
 
 inline Text::Text(Font &font, std::string str, Color color) {
   if (!font.Valid())
     return;
-  text_obj = TTF_CreateText(Context::GetInstance().GetTextEngine(), font.Raw(),
+  text_obj = TTF_CreateText(Context::GetInstance().text_engine, font.Raw(),
                             str.c_str(), str.length());
   if (text_obj)
     SetColor(color);

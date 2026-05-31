@@ -22,8 +22,6 @@ public:
   ~Context();
 
   static Context &GetInstance();
-  SDL_Renderer *GetRenderer() const;
-  SDL_Window *GetWindow() const;
 
   static void Init(std::string window_title, unsigned width, unsigned height);
 
@@ -31,25 +29,6 @@ public:
   void SetRunning(bool running);
 
   void Quit();
-
-  Color GetClearColor() const;
-  void SetClearColor(Color color);
-
-  TTF_Font *GetFont() const;
-  void SetFont(TTF_Font *font);
-
-  TTF_TextEngine *GetTextEngine() const;
-
-  double GetDT() const;
-  void SetDT(double dt);
-  uint64 GetLastTime() const;
-  void SetLastTime(uint64 last);
-
-private:
-  Context(std::string window_title, unsigned width, unsigned height);
-
-  static Context *instance;
-  static std::mutex mtx;
 
   SDL_Window *window;
   SDL_Renderer *renderer;
@@ -61,7 +40,13 @@ private:
   TTF_TextEngine *text_engine;
 
   double dt = 0;
-  uint64 time_last;
+  uint64 last_time;
+
+private:
+  Context(std::string window_title, unsigned width, unsigned height);
+
+  static Context *instance;
+  static std::mutex mtx;
 };
 
 inline void Context::Init(std::string window_title, unsigned width,
@@ -108,27 +93,10 @@ inline void Context::Quit() {
   SDL_Quit();
 }
 
-inline Color Context::GetClearColor() const { return clear_color; }
-inline void Context::SetClearColor(Color color) { clear_color = color; }
-
-inline TTF_TextEngine *Context::GetTextEngine() const { return text_engine; }
-inline TTF_Font *Context::GetFont() const { return current_font; }
-inline void Context::SetFont(TTF_Font *font) { current_font = font; }
-
-inline int Context::IsRunning() const { return running; }
-inline void Context::SetRunning(bool running) { this->running = running; }
-inline SDL_Renderer *Context::GetRenderer() const { return renderer; }
-inline SDL_Window *Context::GetWindow() const { return window; }
-
-inline double Context::GetDT() const { return dt; };
-inline void Context::SetDT(double dt) { this->dt = dt; };
-inline uint64 Context::GetLastTime() const { return time_last; };
-inline void Context::SetLastTime(uint64 last) { time_last = last; }
-
 bool ClearScreen();
 void PollEvents();
 
-inline bool Running() { return Context::GetInstance().IsRunning(); }
+inline bool Running() { return Context::GetInstance().running; }
 
 bool Update();
 } // namespace Vida2D
