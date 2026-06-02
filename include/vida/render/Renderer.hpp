@@ -16,13 +16,19 @@ public:
   Renderer &operator=(Renderer &&) = default;
   ~Renderer();
 
-  void BeginFrame();
-  void EndFrame();
-  bool ShouldClose() const { return shouldClose; }
+  void SetWindowTitle(std::string title);
+  void SetWindowSize(Vector2 size);
+  void SetWindowPos(Vector2 pos);
 
 private:
   int windowId = 0;
   static inline bool shouldClose = false;
+
+  void BeginFrame();
+  void EndFrame();
+  bool ShouldClose() const { return shouldClose; }
+
+  friend class Engine;
 };
 
 } // namespace Vida

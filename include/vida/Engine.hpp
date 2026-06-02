@@ -35,9 +35,10 @@ private:
   float dt;
   std::chrono::time_point<std::chrono::high_resolution_clock> prev;
 
+  bool first_loop = true;
+  bool first_draw = true;
+
   // WARN: MUST BE DECLARED LAST!!!!!
   Renderer renderer;
-
-  friend class Renderer;
 };
 } // namespace Vida

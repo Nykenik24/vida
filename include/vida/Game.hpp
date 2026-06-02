@@ -16,7 +16,7 @@ public:
 
   virtual bool Loop(float) = 0;
   virtual bool Draw(Renderer *renderer) = 0;
-  virtual void Handle(EventType) = 0;
+  virtual void Handle(Event) = 0;
 
 private:
 };

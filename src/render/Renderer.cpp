@@ -1,4 +1,6 @@
 #include "vida/render/Renderer.hpp"
+#include "vida/Vector.hpp"
+#include <string>
 
 namespace Vida {
 Renderer::Renderer(std::string title, Vector2 size) {
@@ -32,4 +34,14 @@ void Renderer::EndFrame() {
   glutSwapBuffers();
   glutMainLoopEvent();
 }
+
+void Renderer::SetWindowTitle(std::string title) {
+  glutSetWindowTitle(title.c_str());
+}
+
+void Renderer::SetWindowSize(Vector2 size) {
+  glutReshapeWindow(size.x, size.y);
+}
+
+void Renderer::SetWindowPos(Vector2 pos) { glutPositionWindow(pos.x, pos.y); }
 } // namespace Vida

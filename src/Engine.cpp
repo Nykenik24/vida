@@ -8,22 +8,30 @@ bool Engine::Update() {
   dt = std::chrono::duration<float>(now - prev).count();
   prev = now;
 
-  game->Handle(EventType::LoopEnter);
+  if (first_loop) {
+    first_loop = false;
+    game->Handle(Event(EventType::LoopFirstEnter));
+  }
+  game->Handle(Event(EventType::LoopEnter));
   if (!game->Loop(dt)) {
     Quit();
     return false;
   }
-  game->Handle(EventType::LoopExit);
+  game->Handle(Event(EventType::LoopExit));
 
+  if (first_draw) {
+    first_draw = false;
+    game->Handle(Event(EventType::DrawFirstEnter, &renderer));
+  }
   if (!renderer.ShouldClose()) {
-    game->Handle(EventType::DrawEnter);
+    game->Handle(Event(EventType::DrawEnter, &renderer));
     renderer.BeginFrame();
     if (!game->Draw(&renderer)) {
       Quit();
       return false;
     }
     renderer.EndFrame();
-    game->Handle(EventType::DrawExit);
+    game->Handle(Event(EventType::DrawExit, &renderer));
   } else {
     Quit();
   }
