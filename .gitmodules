@@ -4,3 +4,6 @@
 [submodule "vendored/SDL_ttf"]
 	path = vendored/SDL_ttf
 	url = https://github.com/libsdl-org/SDL_ttf.git
+[submodule "vendored/freeglut"]
+	path = vendored/freeglut
+	url = https://github.com/freeglut/freeglut

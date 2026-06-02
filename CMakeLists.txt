@@ -12,20 +12,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 
-set(SDL_SHARED        OFF CACHE BOOL "" FORCE)
-set(SDL_STATIC        ON  CACHE BOOL "" FORCE)
-set(SDL_TEST_LIBRARY  OFF CACHE BOOL "" FORCE)
-set(SDL_TESTS         OFF CACHE BOOL "" FORCE)
-set(SDL_INSTALL_TESTS OFF CACHE BOOL "" FORCE)
+set(FREEGLUT_BUILD_DEMOS OFF CACHE BOOL "" FORCE)
+set(FREEGLUT_BUILD_GAMES OFF CACHE BOOL "" FORCE)
+set(FREEGLUT_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(FREEGLUT_BUILD_STATIC_LIBS ON CACHE BOOL "" FORCE)
+set(FREEGLUT_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
-add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
+add_subdirectory(vendored/freeglut EXCLUDE_FROM_ALL)
 
-set(SDLTTF_VENDORED       ON  CACHE BOOL "" FORCE)
-set(SDLTTF_SAMPLES        OFF CACHE BOOL "" FORCE)
-set(BUILD_SHARED_LIBS     OFF CACHE BOOL "" FORCE)
-add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
+find_package(OpenGL REQUIRED)
 
 file(GLOB_RECURSE VIDA2D_SOURCES CONFIGURE_DEPENDS
     src/*.cpp
@@ -41,16 +40,16 @@ target_include_directories(vida2d
 )
 
 target_link_libraries(vida2d
-    PUBLIC SDL3-static SDL3_ttf-static
+    PUBLIC
+        OpenGL::GL
+        freeglut_static
 )
+
+target_compile_definitions(vida2d PUBLIC FREEGLUT_STATIC)
 
 target_compile_options(vida2d PRIVATE
     $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Wpedantic>
     $<$<CXX_COMPILER_ID:MSVC>:/W4>
-)
-
-set_target_properties(vida2d PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib
 )
 
 file(GLOB EXAMPLE_SOURCES CONFIGURE_DEPENDS examples/*.cpp)
@@ -59,14 +58,13 @@ foreach(EXAMPLE_SRC ${EXAMPLE_SOURCES})
   get_filename_component(EXAMPLE_NAME ${EXAMPLE_SRC} NAME_WE)
 
   add_executable(${EXAMPLE_NAME} ${EXAMPLE_SRC})
-
   target_link_libraries(${EXAMPLE_NAME} PRIVATE vida2d)
+
+  set_target_properties(${EXAMPLE_NAME} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin
+    )
 
   if(UNIX AND NOT APPLE)
     target_link_libraries(${EXAMPLE_NAME} PRIVATE m dl pthread)
   endif()
-
-  set_target_properties(${EXAMPLE_NAME} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin
-  )
 endforeach()
