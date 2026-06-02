@@ -35,6 +35,7 @@ add_library(vida STATIC ${VIDA_SOURCES})
 target_include_directories(vida
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        ${CMAKE_CURRENT_SOURCE_DIR}/vendored/freeglut/include
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
