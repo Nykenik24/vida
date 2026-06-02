@@ -45,6 +45,6 @@ void Engine::SetWindowTitle(std::string title) {
   glutSetWindowTitle(title.c_str());
 }
 
-void Engine::SetWindowSize(Vector2 size) { glutReshapeWindow(size.x, size.y); }
-void Engine::SetWindowPos(Vector2 pos) { glutPositionWindow(pos.x, pos.y); }
+void Engine::SetWindowSize(Vector2f size) { glutReshapeWindow(size.x, size.y); }
+void Engine::SetWindowPos(Vector2f pos) { glutPositionWindow(pos.x, pos.y); }
 } // namespace Vida

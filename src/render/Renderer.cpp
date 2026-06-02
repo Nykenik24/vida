@@ -3,7 +3,7 @@
 #include <string>
 
 namespace Vida {
-Renderer::Renderer(std::string title, Vector2 size) {
+Renderer::Renderer(std::string title, Vector2f size) {
   static bool initialized = false;
   if (!initialized) {
     int argc = 0;

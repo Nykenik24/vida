@@ -30,7 +30,7 @@ void MyGame::Handle(Vida::Event ev) {
 int main(void) {
   auto engine = Vida::Engine::Create<MyGame>();
   engine.SetWindowTitle("My cool game");
-  engine.SetWindowSize(Vector2(1080, 720));
+  engine.SetWindowSize(Vector2f(1080, 720));
 
   while (engine.Running()) {
     engine.Update();

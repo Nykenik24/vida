@@ -9,7 +9,7 @@ namespace Vida {
 
 class Renderer {
 public:
-  Renderer(std::string title, Vector2 size);
+  Renderer(std::string title, Vector2f size);
   Renderer(const Renderer &) = delete;
   Renderer &operator=(const Renderer &) = delete;
   Renderer(Renderer &&) = default;

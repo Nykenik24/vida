@@ -25,12 +25,12 @@ public:
   void Quit();
 
   void SetWindowTitle(std::string title);
-  void SetWindowSize(Vector2 size);
-  void SetWindowPos(Vector2 pos);
+  void SetWindowSize(Vector2f size);
+  void SetWindowPos(Vector2f pos);
 
 private:
   explicit Engine(std::unique_ptr<Game> g)
-      : game(std::move(g)), renderer("Vida2D", Vector2(800, 600)) {
+      : game(std::move(g)), renderer("Vida2D", Vector2f(800, 600)) {
     prev = std::chrono::high_resolution_clock::now();
   }
 
