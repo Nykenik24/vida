@@ -26,11 +26,11 @@ add_subdirectory(vendored/freeglut EXCLUDE_FROM_ALL)
 
 find_package(OpenGL REQUIRED)
 
-file(GLOB_RECURSE VIDA2D_SOURCES CONFIGURE_DEPENDS
+file(GLOB_RECURSE VIDA_SOURCES CONFIGURE_DEPENDS
     src/*.cpp
 )
 
-add_library(vida STATIC ${VIDA2D_SOURCES})
+add_library(vida STATIC ${VIDA_SOURCES})
 
 target_include_directories(vida
     PUBLIC
