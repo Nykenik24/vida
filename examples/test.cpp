@@ -19,8 +19,7 @@ bool MyGame::Loop(float dt) { return true; }
 void MyGame::Handle(Vida::Event ev) {
   switch (ev.type) {
   case Vida::EventType::DrawFirstEnter:
-    ev.render->SetWindowTitle("My cool game");
-    ev.render->SetWindowSize(Vector2(1080, 720));
+
     std::cout << "first draw!" << std::endl;
     break;
   default:
@@ -30,6 +29,9 @@ void MyGame::Handle(Vida::Event ev) {
 
 int main(void) {
   auto engine = Vida::Engine::Create<MyGame>();
+  engine.SetWindowTitle("My cool game");
+  engine.SetWindowSize(Vector2(1080, 720));
+
   while (engine.Running()) {
     engine.Update();
   }

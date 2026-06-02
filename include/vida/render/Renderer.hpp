@@ -16,10 +16,6 @@ public:
   Renderer &operator=(Renderer &&) = default;
   ~Renderer();
 
-  void SetWindowTitle(std::string title);
-  void SetWindowSize(Vector2 size);
-  void SetWindowPos(Vector2 pos);
-
 private:
   int windowId = 0;
   static inline bool shouldClose = false;

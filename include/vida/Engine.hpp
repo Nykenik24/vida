@@ -24,6 +24,10 @@ public:
   bool Running() { return running; };
   void Quit();
 
+  void SetWindowTitle(std::string title);
+  void SetWindowSize(Vector2 size);
+  void SetWindowPos(Vector2 pos);
+
 private:
   explicit Engine(std::unique_ptr<Game> g)
       : game(std::move(g)), renderer("Vida2D", Vector2(800, 600)) {

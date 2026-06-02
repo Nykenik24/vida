@@ -40,4 +40,11 @@ bool Engine::Update() {
 }
 
 void Engine::Quit() { running = false; }
+
+void Engine::SetWindowTitle(std::string title) {
+  glutSetWindowTitle(title.c_str());
+}
+
+void Engine::SetWindowSize(Vector2 size) { glutReshapeWindow(size.x, size.y); }
+void Engine::SetWindowPos(Vector2 pos) { glutPositionWindow(pos.x, pos.y); }
 } // namespace Vida
