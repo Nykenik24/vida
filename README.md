@@ -1,4 +1,4 @@
-# vida2d
+# vida
 
 LÖVE-based game framework made in C, for C.
 
