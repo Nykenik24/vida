@@ -7,3 +7,6 @@
 [submodule "vendored/freeglut"]
 	path = vendored/freeglut
 	url = https://github.com/freeglut/freeglut
+[submodule "vendored/poly2tri"]
+	path = vendored/poly2tri
+	url = https://github.com/jhasse/poly2tri.git

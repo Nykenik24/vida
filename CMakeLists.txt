@@ -23,6 +23,7 @@ set(FREEGLUT_BUILD_STATIC_LIBS ON CACHE BOOL "" FORCE)
 set(FREEGLUT_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(vendored/freeglut EXCLUDE_FROM_ALL)
+add_subdirectory(vendored/poly2tri EXCLUDE_FROM_ALL)
 
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
@@ -46,6 +47,8 @@ target_link_libraries(vida
         OpenGL::GL
         GLEW::GLEW
         freeglut_static
+    PRIVATE
+        poly2tri
 )
 
 target_compile_definitions(vida PUBLIC FREEGLUT_STATIC)

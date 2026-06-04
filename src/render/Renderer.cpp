@@ -4,77 +4,14 @@
 #include "vida/render/Renderer.hpp"
 #include "vida/Color.hpp"
 #include "vida/Vector.hpp"
+#include "vida/render/Triangulate.hpp"
+#include <GL/gl.h>
+#include <cmath>
 #include <cstdlib>
 #include <string>
+#include <vector>
 
 namespace Vida {
-
-// Converts pixel coords (origin top-left) to NDC (origin center, Y flipped).
-static void PixelToNDC(float x, float y, float w, float h, float &nx,
-                       float &ny) {
-  nx = (x / w) * 2.0f - 1.0f;
-  ny = -((y / h) * 2.0f - 1.0f);
-}
-
-static void SetColor(GLuint program, ColorRGBA color) {
-  GLint loc = glGetUniformLocation(program, "uColor");
-  glUniform4f(loc, color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-              color.a / 255.0f);
-}
-
-static const char *VERT_SRC = R"glsl(
-  #version 330 core
-  layout(location = 0) in vec2 pos;
-  void main() {
-    gl_Position = vec4(pos, 0.0, 1.0);
-  }
-)glsl";
-
-static const char *FRAG_SRC = R"glsl(
-  #version 330 core
-  uniform vec4 uColor;
-  out vec4 fragColor;
-  void main() {
-    fragColor = uColor;
-  }
-)glsl";
-
-static GLuint CompileShader(GLenum type, const char *src) {
-  GLuint s = glCreateShader(type);
-  glShaderSource(s, 1, &src, nullptr);
-  glCompileShader(s);
-  GLint ok;
-  glGetShaderiv(s, GL_COMPILE_STATUS, &ok);
-  if (!ok) {
-    char log[512];
-    glGetShaderInfoLog(s, 512, nullptr, log);
-    fprintf(stderr, "Shader error: %s\n", log);
-  }
-  return s;
-}
-
-void Renderer::InitShaders() {
-  GLuint vert = CompileShader(GL_VERTEX_SHADER, VERT_SRC);
-  GLuint frag = CompileShader(GL_FRAGMENT_SHADER, FRAG_SRC);
-  shaderProgram = glCreateProgram();
-  glAttachShader(shaderProgram, vert);
-  glAttachShader(shaderProgram, frag);
-  glLinkProgram(shaderProgram);
-  glDeleteShader(vert);
-  glDeleteShader(frag);
-
-  glGenVertexArrays(1, &vao);
-  glGenBuffers(1, &vbo);
-
-  glBindVertexArray(vao);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4, nullptr,
-               GL_DYNAMIC_DRAW); // up to 2 verts
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-  glEnableVertexAttribArray(0);
-  glBindVertexArray(0);
-}
-
 Renderer::Renderer(std::string title, Vector2f size) : windowSize(size) {
   static bool initialized = false;
   if (!initialized) {
@@ -107,50 +44,105 @@ Renderer::~Renderer() {
     glutDestroyWindow(windowId);
 }
 
-void Renderer::BeginFrame() {
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-void Renderer::EndFrame() {
-  glutSwapBuffers();
-  glutMainLoopEvent();
-}
-
-void Renderer::DrawDot(Vector2f pos, ColorRGBA color, float size) {
-  float nx, ny;
-  PixelToNDC(pos.x, pos.y, windowSize.x, windowSize.y, nx, ny);
-
-  float verts[] = {nx, ny};
-
-  glUseProgram(shaderProgram);
-  SetColor(shaderProgram, color);
-
-  glBindVertexArray(vao);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verts), verts);
-
-  glPointSize(size);
-  glDrawArrays(GL_POINTS, 0, 1);
-  glBindVertexArray(0);
+void Renderer::DrawDots(std::vector<Vector2f> dots, ColorRGBA color,
+                        float size) {
+  for (const auto &dot : dots) {
+    auto [nx, ny] = PixelToNDC(dot);
+    glPointSize(size);
+    DrawPrimitive(GL_POINTS, {nx, ny}, color);
+  }
 }
 
 void Renderer::DrawLine(Vector2f a, Vector2f b, ColorRGBA color, float width) {
-  float nx1, ny1, nx2, ny2;
-  PixelToNDC(a.x, a.y, windowSize.x, windowSize.y, nx1, ny1);
-  PixelToNDC(b.x, b.y, windowSize.x, windowSize.y, nx2, ny2);
-
-  float verts[] = {nx1, ny1, nx2, ny2};
-
-  glUseProgram(shaderProgram);
-  SetColor(shaderProgram, color);
-
-  glBindVertexArray(vao);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verts), verts);
-
+  auto [ax, ay] = PixelToNDC(a);
+  auto [bx, by] = PixelToNDC(b);
   glLineWidth(width);
-  glDrawArrays(GL_LINES, 0, 2);
-  glBindVertexArray(0);
+  DrawPrimitive(GL_LINES, {ax, ay, bx, by}, color);
+}
+
+void Renderer::DrawTriangle(Vector2f a, Vector2f b, Vector2f c,
+                            ColorRGBA color) {
+  auto [ax, ay] = PixelToNDC(a);
+  auto [bx, by] = PixelToNDC(b);
+  auto [cx, cy] = PixelToNDC(c);
+  DrawPrimitive(GL_TRIANGLES, {ax, ay, bx, by, cx, cy}, color);
+}
+
+void Renderer::DrawFillTriangle(Vector2f a, Vector2f b, Vector2f c,
+                                ColorRGBA color) {
+  auto [ax, ay] = PixelToNDC(a);
+  auto [bx, by] = PixelToNDC(b);
+  auto [cx, cy] = PixelToNDC(c);
+  DrawPrimitive(GL_TRIANGLE_FAN, {ax, ay, bx, by, cx, cy}, color);
+}
+
+void Renderer::DrawPolygon(const std::vector<Vector2f> &points,
+                           ColorRGBA color) {
+  std::vector<float> verts;
+  verts.reserve(points.size() * 2);
+  for (auto &p : points) {
+    auto [nx, ny] = PixelToNDC(p);
+    verts.push_back(nx);
+    verts.push_back(ny);
+  }
+  DrawPrimitive(GL_LINE_LOOP, verts, color);
+}
+
+void Renderer::DrawFillPolygon(const std::vector<Vector2f> &points,
+                               ColorRGBA color) {
+  auto triangles = Triangulate(points);
+  if (triangles.empty())
+    return;
+
+  std::vector<float> verts;
+  verts.reserve(triangles.size() * 6);
+
+  for (const Vector3 &tri : triangles) {
+    for (int idx : {(int)tri.x, (int)tri.y, (int)tri.z}) {
+      auto [nx, ny] = PixelToNDC(points[idx]);
+      verts.push_back(nx);
+      verts.push_back(ny);
+    }
+  }
+
+  DrawPrimitive(GL_TRIANGLES, verts, color);
+}
+
+std::vector<Vector2f> RectanglePoints(Vector2f pos, Vector2f size) {
+  return {pos,
+          {pos.x + size.x, pos.y},
+          {pos.x + size.x, pos.y + size.y},
+          {pos.x, pos.y + size.y}};
+}
+
+void Renderer::DrawRect(Vector2f pos, Vector2f size, ColorRGBA color) {
+  DrawPolygon(RectanglePoints(pos, size), color);
+}
+
+void Renderer::DrawFillRect(Vector2f pos, Vector2f size, ColorRGBA color) {
+  DrawFillPolygon(RectanglePoints(pos, size), color);
+}
+
+std::vector<Vector2f> CirclePoints(Vector2f center, float radius,
+                                   int segments) {
+  std::vector<Vector2f> points;
+  points.reserve(segments);
+  for (int i = 0; i < segments; i++) {
+    float angle = (2.0f * M_PI * i) / segments;
+    points.push_back(
+        {center.x + radius * cosf(angle), center.y + radius * sinf(angle)});
+  }
+  return points;
+}
+
+void Renderer::DrawCircle(Vector2f center, float radius, ColorRGBA color,
+                          int segments) {
+  DrawPolygon(CirclePoints(center, radius, segments), color);
+}
+
+void Renderer::DrawFillCircle(Vector2f center, float radius, ColorRGBA color,
+                              int segments) {
+  DrawFillPolygon(CirclePoints(center, radius, segments), color);
 }
 
 } // namespace Vida

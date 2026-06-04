@@ -24,6 +24,8 @@ public:
   bool Running() { return running; };
   void Quit();
 
+  int Run();
+
   void SetWindowTitle(std::string title);
   void SetWindowSize(Vector2f size);
   void SetWindowPos(Vector2f pos);

@@ -4,7 +4,6 @@
 #include "vida/Game.hpp"
 #include "vida/Vector.hpp"
 #include "vida/render/Renderer.hpp"
-#include <iostream>
 
 class MyGame : public Vida::Game {
 public:
@@ -18,17 +17,15 @@ private:
 bool MyGame::Loop(float dt) { return true; }
 
 bool MyGame::Draw(Vida::Renderer *render) {
-  render->DrawDot(Vida::Vector2f(5.0f, 5.0f));
-  render->DrawLine(Vida::Vector2f(10, 10), Vida::Vector2f(50, 20), Vida::Red);
+  render->DrawFillPolygon(
+      {{50, 300}, {200, 100}, {350, 300}, {300, 300}, {200, 175}, {100, 300}},
+      Vida::ColorRGBA(0, 255, 255));
   return true;
 }
 
 void MyGame::Handle(Vida::Event ev) {
   switch (ev.type) {
   case Vida::EventType::DrawFirstEnter:
-
-    std::cout << "first draw!" << std::endl;
-    break;
   default:
     return;
   }
@@ -39,8 +36,5 @@ int main(void) {
   engine.SetWindowTitle("My cool game");
   engine.SetWindowSize(Vida::Vector2f(1080, 720));
 
-  while (engine.Running()) {
-    engine.Update();
-  }
-  return 0;
+  return engine.Run();
 }
