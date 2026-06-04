@@ -1,3 +1,4 @@
+#include "vida/Color.hpp"
 #include "vida/Engine.hpp"
 #include "vida/Event.hpp"
 #include "vida/Game.hpp"
@@ -8,13 +9,19 @@
 class MyGame : public Vida::Game {
 public:
   bool Loop(float dt) override;
-  bool Draw(Vida::Renderer *render) override { return true; };
+  bool Draw(Vida::Renderer *render) override;
   void Handle(Vida::Event ev) override;
 
 private:
 };
 
 bool MyGame::Loop(float dt) { return true; }
+
+bool MyGame::Draw(Vida::Renderer *render) {
+  render->DrawDot(Vida::Vector2f(5.0f, 5.0f));
+  render->DrawLine(Vida::Vector2f(10, 10), Vida::Vector2f(50, 20), Vida::Red);
+  return true;
+}
 
 void MyGame::Handle(Vida::Event ev) {
   switch (ev.type) {
@@ -30,7 +37,7 @@ void MyGame::Handle(Vida::Event ev) {
 int main(void) {
   auto engine = Vida::Engine::Create<MyGame>();
   engine.SetWindowTitle("My cool game");
-  engine.SetWindowSize(Vector2f(1080, 720));
+  engine.SetWindowSize(Vida::Vector2f(1080, 720));
 
   while (engine.Running()) {
     engine.Update();

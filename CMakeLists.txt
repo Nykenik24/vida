@@ -25,6 +25,7 @@ set(FREEGLUT_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 add_subdirectory(vendored/freeglut EXCLUDE_FROM_ALL)
 
 find_package(OpenGL REQUIRED)
+find_package(GLEW REQUIRED)
 
 file(GLOB_RECURSE VIDA_SOURCES CONFIGURE_DEPENDS
     src/*.cpp
@@ -43,6 +44,7 @@ target_include_directories(vida
 target_link_libraries(vida
     PUBLIC
         OpenGL::GL
+        GLEW::GLEW
         freeglut_static
 )
 

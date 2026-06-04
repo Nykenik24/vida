@@ -1,5 +1,6 @@
 #pragma once
 
+#include "vida/Color.hpp"
 #include "vida/Vector.hpp"
 #include <GL/freeglut.h>
 #include <GL/gl.h>
@@ -16,8 +17,19 @@ public:
   Renderer &operator=(Renderer &&) = default;
   ~Renderer();
 
+  void DrawDot(Vector2f pos, ColorRGBA color = {}, float size = 5.0f);
+  void DrawLine(Vector2f a, Vector2f b, ColorRGBA color = {},
+                float width = 1.0f);
+
 private:
+  void InitShaders();
+
   int windowId = 0;
+  GLuint shaderProgram = 0;
+  GLuint vao = 0;
+  GLuint vbo = 0;
+  Vector2f windowSize;
+
   static inline bool shouldClose = false;
 
   void BeginFrame();
