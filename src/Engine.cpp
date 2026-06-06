@@ -47,15 +47,6 @@ bool Engine::Update() {
 
 void Engine::Quit() { running = false; }
 
-int Engine::Run() {
-  while (Running()) {
-    if (!Update()) {
-      return 1;
-    }
-  }
-  return 0;
-}
-
 void Engine::SetWindowTitle(std::string title) {
   glutSetWindowTitle(title.c_str());
 }

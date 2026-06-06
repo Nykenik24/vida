@@ -80,5 +80,7 @@ int main(void) {
   engine.SetWindowTitle("My cool game");
   engine.SetWindowSize(Vida::Vector2f(1080, 720));
 
-  return engine.Run();
+  while (engine.Running()) {
+    engine.Update();
+  }
 }
