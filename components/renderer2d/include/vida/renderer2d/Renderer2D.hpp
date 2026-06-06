@@ -18,6 +18,8 @@ public:
   void Present();
 
   void DrawRect(Vec2 position, Vec2 size, ColorRGBA color);
+  void DrawCircle(Vec2 position, float radius, ColorRGBA color);
+  void DrawTriangle(Vec2 position, Vec2 size, ColorRGBA color);
 
 private:
   Renderer3D renderer;

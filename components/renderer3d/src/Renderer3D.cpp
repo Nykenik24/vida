@@ -1,6 +1,7 @@
 #include "vida/renderer3d/Renderer3D.hpp"
 #include "vida/core/Color.hpp"
 #include "vida/core/Math.hpp"
+#include "vida/core/Mesh.hpp"
 #include "vida/renderer3d/Camera.hpp"
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -98,15 +99,22 @@ void Renderer3D::InitShaders() {
 
 void Renderer3D::InitBuffers() {
   glEnable(GL_DEPTH_TEST);
-
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
-
   glBindVertexArray(VAO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vec3), (void *)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                        (void *)offsetof(Vertex, position));
   glEnableVertexAttribArray(0);
+
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                        (void *)offsetof(Vertex, uv));
+  glEnableVertexAttribArray(1);
+
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                        (void *)offsetof(Vertex, normal));
+  glEnableVertexAttribArray(2);
 
   glBindVertexArray(0);
 }
@@ -120,7 +128,7 @@ void Renderer3D::Present() { glfwSwapBuffers(window.Handle()); }
 
 void Renderer3D::SetCamera(const Camera &cam) { camera = cam; }
 
-void Renderer3D::DrawMesh(const Vec3 *vertices, size_t count,
+void Renderer3D::DrawMesh(const Vertex *vertices, size_t count,
                           const Mat4 &transform, ColorRGBA color) {
   Mat4 mvp = camera.ProjectionMatrix(window.Width(), window.Height()) *
              camera.ViewMatrix() * transform;
@@ -141,39 +149,49 @@ void Renderer3D::DrawMesh(const Vec3 *vertices, size_t count,
 }
 
 void Renderer3D::DrawCube(Vec3 position, Vec3 size, ColorRGBA color) {
-  float hx = size.x * 0.5f;
-  float hy = size.y * 0.5f;
-  float hz = size.z * 0.5f;
+  static const Mesh mesh = Mesh::Cube();
 
-  Vec3 vertices[] = {
-      {-hx, -hy, hz},  {hx, -hy, hz},   {hx, hy, hz},    {hx, hy, hz},
-      {-hx, hy, hz},   {-hx, -hy, hz},  {hx, -hy, -hz},  {-hx, -hy, -hz},
-      {-hx, hy, -hz},  {-hx, hy, -hz},  {hx, hy, -hz},   {hx, -hy, -hz},
-      {-hx, -hy, -hz}, {-hx, -hy, hz},  {-hx, hy, hz},   {-hx, hy, hz},
-      {-hx, hy, -hz},  {-hx, -hy, -hz}, {hx, -hy, hz},   {hx, -hy, -hz},
-      {hx, hy, -hz},   {hx, hy, -hz},   {hx, hy, hz},    {hx, -hy, hz},
-      {-hx, hy, hz},   {hx, hy, hz},    {hx, hy, -hz},   {hx, hy, -hz},
-      {-hx, hy, -hz},  {-hx, hy, hz},   {-hx, -hy, -hz}, {hx, -hy, -hz},
-      {hx, -hy, hz},   {hx, -hy, hz},   {-hx, -hy, hz},  {-hx, -hy, -hz},
-  };
+  Mat4 transform = glm::translate(Mat4(1.0f), position) *
+                   glm::scale(Mat4(1.0f), size); // size IS the scale
 
-  Mat4 transform = glm::translate(Mat4(1.0f), position);
-  DrawMesh(vertices, 36, transform, color);
+  DrawMesh(mesh.vertices.data(), mesh.vertices.size(), transform, color);
 }
 
 void Renderer3D::DrawQuad(Vec2 position, Vec2 size, ColorRGBA color) {
-  float hx = size.x * 0.5f;
-  float hy = size.y * 0.5f;
-  float x = position.x;
-  float y = position.y;
+  static const Mesh mesh = Mesh::Quad();
 
-  Vec3 vertices[] = {
-      {x - hx, y - hy, 0.0f}, {x + hx, y - hy, 0.0f}, {x + hx, y + hy, 0.0f},
-      {x + hx, y + hy, 0.0f}, {x - hx, y + hy, 0.0f}, {x - hx, y - hy, 0.0f},
-  };
+  Mat4 transform = glm::translate(Mat4(1.0f), Vec3(position, 0.0f)) *
+                   glm::scale(Mat4(1.0f), Vec3(size, 1.0f));
 
-  Mat4 transform = Mat4(1.0f);
-  DrawMesh(vertices, 6, transform, color);
+  DrawMesh(mesh.vertices.data(), mesh.vertices.size(), transform, color);
 }
 
+void Renderer3D::DrawSphere(Vec3 position, float radius, ColorRGBA color) {
+  static const Mesh mesh = Mesh::Sphere(16, 16);
+
+  Mat4 transform = glm::translate(Mat4(1.0f), position) *
+                   glm::scale(Mat4(1.0f), Vec3(radius * 2.0f));
+
+  DrawMesh(mesh.vertices.data(), mesh.vertices.size(), transform, color);
+}
+
+void Renderer3D::DrawCone(Vec3 position, float radius, float height,
+                          ColorRGBA color) {
+  static const Mesh mesh = Mesh::Cone(32);
+
+  Mat4 transform =
+      glm::translate(Mat4(1.0f), position) *
+      glm::scale(Mat4(1.0f), Vec3(radius * 2.0f, height, radius * 2.0f));
+
+  DrawMesh(mesh.vertices.data(), mesh.vertices.size(), transform, color);
+}
+
+void Renderer3D::DrawPyramid(Vec3 position, Vec3 size, ColorRGBA color) {
+  static const Mesh mesh = Mesh::Pyramid();
+
+  Mat4 transform =
+      glm::translate(Mat4(1.0f), position) * glm::scale(Mat4(1.0f), size);
+
+  DrawMesh(mesh.vertices.data(), mesh.vertices.size(), transform, color);
+}
 } // namespace Vida

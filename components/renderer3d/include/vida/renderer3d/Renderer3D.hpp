@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vida/core/Color.hpp"
+#include "vida/core/Mesh.hpp"
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
 #include "vida/core/Math.hpp"
@@ -23,10 +24,13 @@ public:
   void SetCamera(const Camera &camera);
   Camera &GetCamera() { return camera; }
 
-  void DrawMesh(const Vec3 *vertices, size_t count, const Mat4 &transform,
+  void DrawMesh(const Vertex *vertices, size_t count, const Mat4 &transform,
                 ColorRGBA color);
   void DrawQuad(Vec2 position, Vec2 size, ColorRGBA color);
   void DrawCube(Vec3 position, Vec3 size, ColorRGBA color);
+  void DrawSphere(Vec3 position, float radius, ColorRGBA color);
+  void DrawCone(Vec3 position, float radius, float height, ColorRGBA color);
+  void DrawPyramid(Vec3 position, Vec3 size, ColorRGBA color);
 
   Window &GetWindow() { return window; }
 

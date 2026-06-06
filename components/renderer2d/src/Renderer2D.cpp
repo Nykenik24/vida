@@ -1,5 +1,6 @@
 #include "vida/renderer2d/Renderer2D.hpp"
 #include "vida/core/Color.hpp"
+#include "vida/core/Mesh.hpp"
 #include "vida/renderer3d/Camera.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -21,5 +22,26 @@ void Renderer2D::Present() { renderer.Present(); }
 
 void Renderer2D::DrawRect(Vec2 position, Vec2 size, ColorRGBA color) {
   renderer.DrawQuad(position, size, Vec3(color.r, color.g, color.b));
+}
+
+void Renderer2D::DrawCircle(Vec2 position, float radius, ColorRGBA color) {
+  static const Mesh mesh = Mesh::Disc(32);
+
+  Mat4 transform =
+      glm::translate(Mat4(1.0f), Vec3(position, 0.0f)) *
+      glm::scale(Mat4(1.0f), Vec3(radius * 2.0f, radius * 2.0f, 1.0f));
+
+  renderer.DrawMesh(mesh.vertices.data(), mesh.vertices.size(), transform,
+                    color);
+}
+
+void Renderer2D::DrawTriangle(Vec2 position, Vec2 size, ColorRGBA color) {
+  static const Mesh mesh = Mesh::Triangle();
+
+  Mat4 transform = glm::translate(Mat4(1.0f), Vec3(position, 0.0f)) *
+                   glm::scale(Mat4(1.0f), Vec3(size, 1.0f));
+
+  renderer.DrawMesh(mesh.vertices.data(), mesh.vertices.size(), transform,
+                    color);
 }
 } // namespace Vida
