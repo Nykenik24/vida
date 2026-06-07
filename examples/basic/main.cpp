@@ -9,7 +9,6 @@ int main() {
   Vida::Renderer3D renderer(window);
 
   renderer.GetCamera().Move({0.0f, 2.0f, 8.0f});
-  renderer.GetCamera().Point({0.0f, 0.0f, 0.0f});
 
   while (!window.ShouldClose()) {
     window.PollEvents();

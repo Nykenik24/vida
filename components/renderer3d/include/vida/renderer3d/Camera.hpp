@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vida/core/Math.hpp"
+#include "vida/core/Model.hpp"
 
 namespace Vida {
 class Camera {
@@ -9,7 +10,8 @@ public:
   void Move(Vec3 pos);
 
   Vec3 PointingTo() const;
-  void Point(Vec3 target);
+  void PointTo(Vec3 target);
+  void PointTo(Model model);
 
   float GetFOV() const;
   void SetFOV(float fov);
