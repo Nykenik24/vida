@@ -19,6 +19,7 @@ Then, use the generated libraries in `lib/`, or try out the examples at `bin/`.
 
 ```cpp
 #include "vida/core/Color.hpp"
+#include "vida/core/Time.hpp"
 #include "vida/renderer3d/FX.hpp"
 #include "vida/renderer3d/Renderer3D.hpp"
 #include "vida/window/Window.hpp"
@@ -30,19 +31,20 @@ int main() {
   renderer.GetCamera().Move({0.0f, 2.0f, 8.0f});
   renderer.GetCamera().Point({0.0f, 0.0f, 0.0f});
 
-  float dt = 0.016f;
-
   while (!window.ShouldClose()) {
     window.PollEvents();
-    renderer.Update(dt);
+    Vida::Time::UpdateDelta();
+    renderer.Update(Vida::Time::Delta());
 
     renderer.Clear(Vida::ColorRGBA(0.1f, 0.1f, 0.1f, 1.0f));
 
     renderer.DrawCube({-5.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
                       Vida::ColorRGBA::Red, Vida::FX::Unlit);
 
+    Vida::FXParams lit_params;
+    lit_params.ambient = 0.25f;
     renderer.DrawCube({-3.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
-                      Vida::ColorRGBA::Blue, Vida::FX::Lit);
+                      Vida::ColorRGBA::Blue, Vida::FX::Lit, lit_params);
 
     renderer.DrawCube({-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
                       Vida::ColorRGBA::Green, Vida::FX::Outline);
@@ -62,4 +64,4 @@ int main() {
 }
 ```
 
-<img width="1168" height="555" alt="image" src="https://github.com/user-attachments/assets/1a32bba0-154c-4cd9-8b63-f0d1c91be21e" />
+<img width="1188" height="595" alt="image" src="https://github.com/user-attachments/assets/4c7e7c3c-d70d-4b2e-890f-e54d79a5750d" />
