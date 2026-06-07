@@ -17,6 +17,8 @@ void Renderer2D::LockCamera() {
   renderer.SetCamera(cam);
 }
 
+void Renderer2D::Update(float dt) { renderer.Update(dt); }
+
 void Renderer2D::Clear(ColorRGBA color) { renderer.Clear(color); }
 
 void Renderer2D::Present() { renderer.Present(); }

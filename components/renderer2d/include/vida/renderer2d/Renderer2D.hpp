@@ -16,6 +16,8 @@ public:
   Renderer2D(const Renderer2D &) = delete;
   Renderer2D &operator=(const Renderer2D &) = delete;
 
+  void Update(float dt);
+
   void Clear(ColorRGBA color);
   void Present();
 

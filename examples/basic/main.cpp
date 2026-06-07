@@ -1,4 +1,5 @@
 #include "vida/core/Color.hpp"
+#include "vida/core/Time.hpp"
 #include "vida/renderer3d/FX.hpp"
 #include "vida/renderer3d/Renderer3D.hpp"
 #include "vida/window/Window.hpp"
@@ -10,11 +11,10 @@ int main() {
   renderer.GetCamera().Move({0.0f, 2.0f, 8.0f});
   renderer.GetCamera().Point({0.0f, 0.0f, 0.0f});
 
-  float dt = 0.016f;
-
   while (!window.ShouldClose()) {
     window.PollEvents();
-    renderer.Update(dt);
+    Vida::Time::UpdateDelta();
+    renderer.Update(Vida::Time::Delta());
 
     renderer.Clear(Vida::ColorRGBA(0.1f, 0.1f, 0.1f, 1.0f));
 
